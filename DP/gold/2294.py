@@ -1,24 +1,42 @@
 # 동전 2
 
-def solve():
-    for i in range(N):
-        dp[i][0] = 0
-        for j in range(K + 1):
-            jj = j + coin[i]
-            if jj <= K:
-                dp[i][jj] = min(dp[i][jj], dp[i][j] + 1)
-            dp[i + 1][j] = dp[i][j]
+# dp[i]: i원을 만들 때 필요한 동전의 최소 개수
+# answer: max(dp[k])
+# update rule: dp[i] = min(dp[i], dp[i - coin_value] + 1)
+#   전자: 이때까지의 i원을 만드는데 필요한 최소 동전 개수
+#   후자: 현재 동전을 사용해서 i원을 만드는 방법 즉, (i - 현재 동전 값)원을 만드는데 필요한 최소 동전 수 + 1 
 
-N, K = map(int, input().split())
-coin = []
-for i in range(N):
-    c = int(input())
-    coin.append(c)
 
-inf = 100000 + 1
-dp = [[inf] * (K + 1) for _ in range(N + 1)]
-solve()
-result = dp[N - 1][K]
-if result == inf:
-    result = -1
-print(result)
+# (동전: 1, 5, 12)
+#  0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+#  -------------------------------------
+# |0 1 2 3 4 5 6 7 8 9 10 ...            <--- 현재 동전: 1
+# |0 1 2 3 4 1                           <--- 현재 동전: 5
+
+# (동전: 5, 5, 10)
+#  0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+#  -------------------------------------
+# |0 0 0 0 0 1 0 0 0 0 2                 <--- 현재 동전: 5
+# |0 0 0 0 0 1 0 0 0 0 2                 <--- 현재 동전: 5
+# |0 0 0 0 0 1 0 0 0 0 1                 <--- 현재 동전: 10
+
+
+n, k = map(int, input().split())
+coin = [0] * n
+for i in range(n):
+    coin[i] = int(input())
+
+INF = 10001
+dp = [INF] * (k + 1)
+dp[0] = 0
+
+for c in coin:
+    for i in range(c, k + 1):
+        dp[i] = min(dp[i], dp[i - c] + 1)
+
+if dp[k] == INF:
+    print(-1)
+else:
+    print(dp[k])
+
+
